@@ -3,38 +3,35 @@ package com.empresa.pfdesarrollo.controller;
 import com.empresa.pfdesarrollo.model.SolicitudCambio;
 import com.empresa.pfdesarrollo.repository.SolicitudCambioRepository;
 import com.empresa.pfdesarrollo.service.TipoCambioService;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/tipo-cambio")
 public class TipoCambioController {
 
-    private final TipoCambioService tipoCambioService;
-    private final SolicitudCambioRepository solicitudCambioRepository;
+    @Autowired
+    private TipoCambioService tipoCambioService;
 
-    public TipoCambioController(TipoCambioService tipoCambioService, SolicitudCambioRepository solicitudCambioRepository) {
-        this.tipoCambioService = tipoCambioService;
-        this.solicitudCambioRepository = solicitudCambioRepository;
-    }
-
-    @GetMapping("/ultima")
-    public SolicitudCambio obtenerUltimoTipoCambio() {
-        return solicitudCambioRepository.findTopByOrderByIdDesc();
-    }
-
-    @GetMapping("/todas")
-    public List<SolicitudCambio> obtenerTodasSolicitudes() {
-        return solicitudCambioRepository.findAll();
-    }
+    @Autowired
+    private SolicitudCambioRepository solicitudCambioRepository;
 
     @PostMapping("/registrar")
-    public SolicitudCambio registrarSolicitud() {
-        String respuestaTipoCambio = tipoCambioService.obtenerTipoCambio();
-        SolicitudCambio solicitud = new SolicitudCambio();
-        solicitud.setNumeroSolicitud("123"); // Número de solicitud (puedes generar uno único aquí)
-        solicitud.setRespuestaTipoCambio(respuestaTipoCambio);
-        return solicitudCambioRepository.save(solicitud);
+    public ResponseEntity<?> registrarTipoCambio() {
+        String tipoCambio = tipoCambioService.obtenerTipoCambio();
+        
+        if (tipoCambio != null) {
+            SolicitudCambio solicitud = new SolicitudCambio();
+            solicitud.setNumeroSolicitud("123"); // Genera o asigna un número de solicitud
+            solicitud.setRespuestaTipoCambio(tipoCambio);
+            solicitudCambioRepository.save(solicitud);
+
+            return ResponseEntity.ok(solicitud);
+        } else {
+            return ResponseEntity.status(500).body("Error al obtener el tipo de cambio");
+        }
     }
 }

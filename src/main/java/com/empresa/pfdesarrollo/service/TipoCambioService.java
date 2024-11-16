@@ -3,26 +3,21 @@ package com.empresa.pfdesarrollo.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathConstants;
 import java.io.StringReader;
-import javax.xml.transform.stream.StreamSource;
 
 @Service
 public class TipoCambioService {
 
-    private final WebServiceTemplate webServiceTemplate;
-
     @Autowired
-    public TipoCambioService(WebServiceTemplate webServiceTemplate) {
-        this.webServiceTemplate = webServiceTemplate;
-    }
+    private WebServiceTemplate webServiceTemplate;
 
     public String obtenerTipoCambio() {
         String soapRequest = """
@@ -34,9 +29,9 @@ public class TipoCambioService {
                 """;
 
         StreamSource request = new StreamSource(new StringReader(soapRequest));
-        DOMSource response = (DOMSource) webServiceTemplate.sendSourceAndReceive("https://www.banguat.gob.gt/variables/ws/TipoCambio.asmx", request, null);
-
         try {
+            StreamSource response = (StreamSource) webServiceTemplate.sendSourceAndReceive("https://www.banguat.gob.gt/variables/ws/TipoCambio.asmx", request, null);
+
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(new InputSource(new StringReader(response.getNode().getTextContent())));

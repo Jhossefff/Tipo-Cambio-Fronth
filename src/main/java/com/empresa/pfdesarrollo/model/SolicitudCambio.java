@@ -1,6 +1,9 @@
 package com.empresa.pfdesarrollo.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,8 +16,7 @@ public class SolicitudCambio {
     private String respuestaTipoCambio;
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Getters y Setters
-
+    // Getters y setters
     public Long getId() {
         return id;
     }
